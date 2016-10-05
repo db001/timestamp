@@ -4,15 +4,19 @@ var app = express();
 
 var result = {"unix": null, "natural": null};
 
+var d;
+
 app.get('/*', function (req, res) {
   var path = req.path.slice(1);
   
   if (/^[0-9]*$/.test(path)) {
     result.unix = path;
-    var d = new Date(path * 1000);
+    d = new Date(path * 1000);
     result.natural = moment(d).format("MMMM DD, YYYY");
   } else {
-    
+    d = new Date(path);
+    result.natural = moment(d).format("MMMM DD, YYYY");
+    result.unix = d.getTime() / 1000;
   }
   
   res.send(result);
