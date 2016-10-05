@@ -1,17 +1,18 @@
 var express = require('express');
+var moment = require('moment');
 var app = express();
 
-var result = {"path": "", "unix": null, "natural": null};
+var result = {"unix": null, "natural": null};
 
 app.get('/*', function (req, res) {
-  var path = req.path;
-  
-  result.path = path;
+  var path = req.path.slice(1);
   
   if (/^[0-9]*$/.test(path)) {
-    result.unix = "True";
+    result.unix = path;
+    var d = new Date(path * 1000);
+    result.natural = moment(d).format("MMMM DD, YYYY");
   } else {
-    result.natural = "True";
+    
   }
   
   res.send(result);
