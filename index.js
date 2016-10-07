@@ -2,23 +2,27 @@ var express = require('express');
 var moment = require('moment');
 var app = express();
 
-var result = {"unix": null, "natural": null};
-
-var d;
+var result = {"string":null, "unix": null, "natural": null};
 
 app.use('/', express.static(__dirname + '/public'));
 
 app.get('/:dateString', function (req, res) {
-  var path = req.params.dateString.slice(1);
+  var path = req.params.dateString;
+  
+  var d = new Date(path);
   
   if (/^[0-9]*$/.test(path)) {
     result.unix = path;
     d = new Date(path * 1000);
     result.natural = moment(d).format("MMMM DD, YYYY");
+    result.string = "Unix";
+  } else if (moment(d).format("MMMM DD, YYYY") === "Invalid date") {
+    result = {"string": "Garbage", "unix": null, "natural": null};
   } else {
     d = new Date(path);
     result.natural = moment(d).format("MMMM DD, YYYY");
     result.unix = d.getTime() / 1000;
+    result.string = "Natural";
   }
   
   res.send(result);
