@@ -1,46 +1,31 @@
-var http = require('http');
-var url = require('url');
+var express = require('express');
+var moment = require('moment');
+var app = express();
 
-var result;
+var result = {"unix": null, "natural": null};
 
-var server = http.createServer(function(req, res) {
+app.use('/', express.static(__dirname + '/public'));
 
-  var path = url.parse(req.url.pathname, true);
+app.get('/:dateString', function (req, res) {
+  var path = req.params.dateString;
   
-  result = path.pathname;
+  var d = new Date(path);
   
-  var d = new Date(result);
-  
-
-  /*
-  var urlPath = url.parse(req.url, true);
-  var time = new Date(urlPath.query.iso);
-  
-
-  if (urlPath.pathname === "/api/unixtime") {
-    result = {
-      "unixtime": time.getTime()
-      };
+  if (/^[0-9]*$/.test(path)) {
+    result.unix = path;
+    d = new Date(path * 1000);
+    result.natural = moment(d).format("MMMM DD, YYYY");
+  } else if (moment(d).format("MMMM DD, YYYY") === "Invalid date") {
+    result = {"unix": null, "natural": null};
   } else {
-    result = {
-      "hour": time.getHours(),
-      "minute": time.getMinutes(),
-      "second": time.getSeconds()
-    };
+    d = new Date(path);
+    result.natural = moment(d).format("MMMM DD, YYYY");
+    result.unix = d.getTime() / 1000;
   }
-
-  if (result) {
-    res.writeHead(200, {'Content-Type': 'application/json'});
-    res.end(JSON.stringify(urlPath));
-  } else {
-    res.writeHead(404);
-    res.end;
-  }
-  */
-  res.writeHead(200, {'Content-Type': 'application/json'}); 
-  res.end(d);
+  
+  res.send(result);
 });
 
-server.listen(8080, function () {
-  console.log('Server listening on port 8080');
+app.listen(8080, function () {
+  console.log('Example app listening on port 8080!');
 });
