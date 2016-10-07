@@ -6,8 +6,10 @@ var result = {"unix": null, "natural": null};
 
 var d;
 
-app.get('/*', function (req, res) {
-  var path = req.path.slice(1);
+app.use('/', express.static(__dirname + '/public'));
+
+app.get('/:dateString', function (req, res) {
+  var path = req.params.dateString.slice(1);
   
   if (/^[0-9]*$/.test(path)) {
     result.unix = path;
